@@ -1,5 +1,4 @@
 from tkinter import *
-import pyautogui
 import time
 import webbrowser
 
