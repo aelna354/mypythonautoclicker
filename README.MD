@@ -14,6 +14,6 @@ How to use:
 * Either hit the start button or press F3 to start, and either hit the stop button or press F4 to stop.
 * Note you must stop the program before changing speeds; you cannot change speeds while it is autoclicking.
 
-Features I will consider adding:
-* Automatically disabling the program with a native mouse click.
-* Custom hotkeys for enable/disable and custom time intervals (could easily do that, it's just a matter of tedium).
+Features I will consider adding in the future:
+* Custom hotkeys for enable/disable
+* Custom time intervals
