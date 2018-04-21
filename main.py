@@ -22,7 +22,7 @@ class App(Frame):
 		Label(master, text="Seconds between clicks").grid(row=2,column=0,sticky=W)
 
 		speedframe = Frame()
-		speed = [.1, .25, .5, 1, 1.25, 2]
+		speed = [.025, .05, .25, .5, 1]
 		for pos, i in enumerate(speed):
 			Radiobutton(speedframe, text=i, variable=self.speed, value=int(i*1000)).grid(row=0,column=pos)
 		speedframe.grid(row=2,column=1,sticky=W)
@@ -32,15 +32,21 @@ class App(Frame):
 		self.status.grid(row=3,column=0)
 
 		actionframe = Frame()
-		Button(actionframe, text="Start (F3)", width=15, bg="silver", fg="green", command=self.activate).grid(row=0,column=0,sticky=W)
-		Button(actionframe, text="Stop (F4, RMB)", width=15, bg="silver", fg="red", comman=self.stop).grid(row=0,column=1,sticky=W)
+		Button(actionframe, text="Start (F3, F4)", width=15, bg="silver", fg="green", command=self.activate).grid(row=0,column=0,sticky=W)
+		Button(actionframe, text="Stop (F3, F4, RMB)", width=15, bg="silver", fg="red", comman=self.stop).grid(row=0,column=1,sticky=W)
 		actionframe.grid(row=4,column=1,sticky=W)
 
-		keyboard.add_hotkey("F3", self.activate)
-		keyboard.add_hotkey("F4", self.stop)
+		keyboard.add_hotkey("F3", self.toggle)
+		keyboard.add_hotkey("F4", self.toggle)
 		mouse.on_button(self.stop, buttons='right')
 
 		Button(master, text="How To Use", command=lambda:self.help()).grid(row=5,column=0,sticky=W)
+
+	def toggle(self):
+		if self.active.get() == "ACTIVE":
+			self.stop()
+		else:
+			self.activate()
 
 	def activate(self):
 		if not (self.active.get() == "ACTIVE"):
@@ -53,14 +59,12 @@ class App(Frame):
 	def start(self):
 		if self.active.get() == "ACTIVE":
 			mouse.click()
-			print("Click.") #for debugging
 			self.master.after(self.truespeed, self.start)
 
 	def stop(self):
 		if self.active.get() == "ACTIVE":
 			self.active.set("INACTIVE")
 			self.status["fg"] = "red"
-			print("Done.")
 
 	def help(self):
 		messagebox.showinfo("Hi!","Select how many seconds are between clicks."+
@@ -71,6 +75,6 @@ class App(Frame):
 
 program = Tk()
 program.title("AutoClicker")
-program.geometry("400x150")
+program.geometry("420x150")
 app = App(program)
 program.mainloop()
