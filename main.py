@@ -1,67 +1,70 @@
-from tkinter import *
-from tkinter import messagebox
-import keyboard
-import pyautogui
-import webbrowser
-import time
+from tkinter import * #gui
+from tkinter import messagebox #help message
+import keyboard #hotkeys
+import pyautogui #click action
+import webbrowser #hyperlink
+
 class App(Frame):
 	def __init__(self, master):
-		#we need the following:
-		#active state
-		#speed
-		#left click, right click, or key?
-		#if key, which one?
-		#speed
-		#enable hotkey (F1 by default)
-		#disable key (F2 by default)
-		self.master = master 	 	  #so other method can access it
-		self.active = StringVar()	  #INACTIVE or ACTIVE (False or True)
+		self.master = master #here to allow another method to access it
+		self.active = StringVar()
 		self.active.set("INACTIVE")
-		self.speed = StringVar() 	  #how fast it is
-		self.speed.set(".5") 		  #note: miliseconds is 1000 times
-		self.enablekey = StringVar()  #enable hotkey
-		self.enablekey.set("F3")
-		self.disablekey = StringVar() #disable hotkey
-		self.disablekey.set("F4")
+		self.speed = IntVar()
+		self.speed.set(500)
 
 		hyperlink = Label(master, text="Source Code", fg="blue", cursor="hand2")
 		hyperlink.grid(row=1, column=0, sticky=W)
 		hyperlink.bind("<Button-1>", lambda x: webbrowser.open_new(r"https://github.com/aelna354/mypythonautoclicker"))
 
-		Button(master, text="Set Enable Hot Key",command=lambda:self.getcustomkey(0)).grid(row=2,column=0,sticky=W)
-		enablekeybox = Entry(master,width=10,textvariable=self.enablekey)
-		enablekeybox.configure(state='readonly')
-		enablekeybox.grid(row=2,column=1,sticky=W)
+		Label(master, text="Seconds between clicks").grid(row=2,column=0,sticky=W)
 
-		Button(master, text="Set Disable Hot Key", command=lambda:self.getcustomkey(1)).grid(row=3,column=0,sticky=W)
-		disablekeybox = Entry(master,width=10,textvariable=self.disablekey)
-		disablekeybox.configure(state='readonly')
-		disablekeybox.grid(row=3,column=1,sticky=W)
-
-		Label(master, text="Seconds between clicks").grid(row=4,column=0,sticky=W)
-		Entry(master, textvariable=self.speed,width=10).grid(row=4,column=1,sticky=W)
-		Button(master,text="Set Default",command=self.default).grid(row=5,column=0,sticky=W)
+		speedframe = Frame()
+		speed = [.1, .25, .5, 1, 1.25, 2]
+		for pos, i in enumerate(speed):
+			Radiobutton(speedframe, text=i, variable=self.speed, value=int(i*1000)).grid(row=0,column=pos)
+		speedframe.grid(row=2,column=1,sticky=W)
 
 		self.status = Entry(master, textvariable=self.active, fg="red")
 		self.status.configure(state="readonly")
-		self.status.grid(row=6,column=0)
+		self.status.grid(row=3,column=0)
 
-	def getcustomkey(self, num):
-		if num == 0:
-			keyval = keyboard.read_key()
-			self.enablekey.set(keyval)
-		if num == 1:
-			keyval = keyboard.read_key()
-			self.disablekey.set(keyval)
+		actionframe = Frame()
+		Button(actionframe, text="Start (F3)", width=15, bg="silver", fg="Green", command=self.activate).grid(row=0,column=0,sticky=W)
+		Button(actionframe, text="Stop (F4)", width=15, bg="silver", fg="Red", comman=self.stop).grid(row=0,column=1,sticky=W)
+		actionframe.grid(row=4,column=1,sticky=W)
 
-	def default(self):
-		self.status["fg"] = "green"
-		self.speed.set(".5")
-		self.enablekey.set("F3")
-		self.disablekey.set("F4")
+		keyboard.add_hotkey("F3", self.activate)
+		keyboard.add_hotkey("F4", self.stop)
+
+		Button(master, text="How To Use", command=lambda: self.help()).grid(row=5,column=0,sticky=W)
+
+	def activate(self):
+		if not (self.active.get() == "ACTIVE"):
+			self.truespeed = self.speed.get()
+			self.active.set("ACTIVE")
+			self.status["fg"] = "green"
+			self.start()
+
+	def start(self):
+		if self.active.get() == "ACTIVE":
+			pyautogui.click()
+			print("Click.") #for debugging
+			self.master.after(self.truespeed, self.start)
+
+	def stop(self):
+		if self.active.get() == "ACTIVE":
+			self.active.set("INACTIVE")
+			self.status["fg"] = "red"
+
+	def help(self):
+		messagebox.showinfo("Hi!","Select how many seconds are between clicks."+
+							" (For example, with 0.5, you have a half second between clicks, or two clicks a second.)\n"+
+							"To enable clicking, either press F3 or hit the Start button.\n"+
+							"To disable, either press F4 or hit the Stop button.\n\n"+
+							"(NOTE: You cannot change the speed while the program is active. You must first disable it before changing speed.)\n")
 
 program = Tk()
 program.title("AutoClicker")
-program.geometry("500x300")
+program.geometry("400x150")
 app = App(program)
 program.mainloop()
