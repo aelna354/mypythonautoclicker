@@ -3,7 +3,6 @@
 #When enabled, the program will periodically print "Yay!"
 
 from tkinter import * #gui
-import pyautogui	  #clicker
 import keyboard		  #hotkeys
 
 class App(Tk):
