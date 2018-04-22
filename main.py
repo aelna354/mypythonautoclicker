@@ -1,19 +1,18 @@
-#credits to https://github.com/boppreh/keyboard and https://github.com/boppreh/mouse
-#App for being an autoclicker.
+#App for being an autoclicker. Created for and by aelna354.
+
 
 from tkinter import *
-from tkinter import messagebox
-import keyboard
-import webbrowser
-import mouse
+import keyboard, webbrowser, mouse
+#keyboard is from: https://github.com/boppreh/keyboard
+#mouse is from: https://github.com/boppreh/mouse
 
 class App(Frame):
 	def __init__(self, master):
-		self.master = master #here to allow another method to access it
-		self.active = StringVar() #determines if program should be autoclicking
+		self.master = master #so that another method to access it
+		self.active = StringVar()
 		self.active.set("INACTIVE")
-		self.speed = IntVar() #miliseconds between autoclicks
-		self.speed.set(500)
+		self.speed = IntVar()
+		self.speed.set(25)
 
 		hyperlink = Label(master, text="Source Code", fg="blue", cursor="hand2")
 		hyperlink.grid(row=1, column=0, sticky=W)
@@ -29,18 +28,17 @@ class App(Frame):
 
 		self.status = Entry(master, textvariable=self.active, fg="red")
 		self.status.configure(state="readonly")
-		self.status.grid(row=3,column=0)
+		self.status.grid(row=3,column=0,sticky=W)
 
-		actionframe = Frame()
-		Button(actionframe, text="Start (F3, F4)", width=15, bg="silver", fg="green", command=self.activate).grid(row=0,column=0,sticky=W)
-		Button(actionframe, text="Stop (F3, F4, RMB)", width=15, bg="silver", fg="red", comman=self.stop).grid(row=0,column=1,sticky=W)
-		actionframe.grid(row=4,column=1,sticky=W)
+		Label(master, fg="black", bg="silver",
+		text="Press either F3 or F4 to toggle the program.\n"+
+		"You can also stop the program with the RMB.\nNOTE: You cannot"+
+		" change speed while program is active."
+		).grid(row=4,column=0,columnspan=3,sticky=W)
 
 		keyboard.add_hotkey("F3", self.toggle)
 		keyboard.add_hotkey("F4", self.toggle)
 		mouse.on_button(self.stop, buttons='right')
-
-		Button(master, text="How To Use", command=lambda:self.help()).grid(row=5,column=0,sticky=W)
 
 	def toggle(self):
 		if self.active.get() == "ACTIVE":
@@ -49,8 +47,8 @@ class App(Frame):
 			self.activate()
 
 	def activate(self):
-		if not (self.active.get() == "ACTIVE"):
-			#we don't want to change speed WHILE active so we set it once
+		if self.active.get() == "INACTIVE":
+			#We set true speed once so speed won't change while running
 			self.truespeed = self.speed.get()
 			self.active.set("ACTIVE")
 			self.status["fg"] = "green"
@@ -66,15 +64,8 @@ class App(Frame):
 			self.active.set("INACTIVE")
 			self.status["fg"] = "red"
 
-	def help(self):
-		messagebox.showinfo("Hi!","Select how many seconds are between clicks."+
-							" (For example, with 0.5, you have a half second between clicks, or two clicks a second.)\n"+
-							"To enable clicking, either press F3 or hit the Start button.\n"+
-							"To disable, either hit the RMB, press F4, or hit the Stop button.\n\n"+
-							"(NOTE: You cannot change the speed while the program is active. You must first disable it before changing speed.)\n")
-
 program = Tk()
 program.title("AutoClicker")
-program.geometry("420x150")
+program.geometry("390x130")
 app = App(program)
 program.mainloop()
