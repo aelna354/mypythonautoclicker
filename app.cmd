@@ -1,1 +1,1 @@
-python main.py
+START pythonw.exe main.py
